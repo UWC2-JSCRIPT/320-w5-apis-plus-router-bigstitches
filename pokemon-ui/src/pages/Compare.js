@@ -11,13 +11,6 @@ Compare.propTypes = {
 };
   return (
     <div>
-      <ul>
-        {prop.pokemonList.map((eachPokemon) => (
-          <li key={eachPokemon.name}>
-            {eachPokemon.name}
-          </li>
-        ))}
-      </ul>
       <APICompare pokemonList = {prop.pokemonList}>
       </APICompare>
     </div>

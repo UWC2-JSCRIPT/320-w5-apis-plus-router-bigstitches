@@ -1,54 +1,92 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
+// import EachPokemon from './EachPokemon';
+// import testing from './data/validJson.json'
 
 function APICompare(prop) {
-APICompare.defaultProps = {
-  pokemonList: [],
-};
-APICompare.propTypes = {
-  pokemonList: PropTypes.array,
-};
-// go through array and get lower cases
-// function to lower case
-let message = 'Empty Array!  Pick Pokemon in the Home page!';
-// iterate through prop.pokemonList
+  APICompare.defaultProps = {
+    pokemonList: [],
+  };
+  APICompare.propTypes = {
+    pokemonList: PropTypes.array,
+  };
 
+  const [img, setImage] = useState();
+  const [baseExperience, setExperience] = useState();
+  const [weight, setWeight] = useState();
+  
+  function displayInfo(json) {
+    setImage(json.sprites.front_default);
+    setExperience(json.base_experience);
+    setWeight(json.weight);  
+  }
+  let lclPokArrN = '';
+  try {
+    lclPokArrN = prop.pokemonList[0].name.toLowerCase();
+  } catch (error) {
+    lclPokArrN = 'ditto';
+    console.log('Enter a Pokemon in main menu');
+  }
 
-const pokemonName = 'poohead';
-// API call to the Pokemon site
-function getPokemonInfo() {
-    fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`, { 
-    // fetch(`https://fldajfld/${pokemonName}`, {    
+  function getPokemonInfo(pokemonName) {
+    fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`, {
+    // fetch(`https:deliberategarbage`, {  
       method: 'get',  
-    })  
+    })
     .then(response => { 
       if (response.status >= 200 && response.status <= 299) {
-        // you made it!
         return response.json(); 
-      } if (response.status === 404) {
+      } else if (response.status === 404) {
         throw Error(`${pokemonName} isn't in the database!`)
-      }  else {
+      } else {
         throw Error(response.statusText);
       }
     })  
-    .then(json => { 
-      console.log(json); 
-      // displayInfo(json);
+    .then(allPokemon => { 
+      // console.log(`HERE ${allPokemon}`); 
+      return displayInfo(allPokemon);
     })
     .catch((e) => {
       // network errors
       if (e instanceof TypeError) {
         throw Error(`${e}: Check your network.
           Then check the API at https://pokeapi.co/`);
-      } else {
-        throw Error(`${e}`);
-      }
+      } 
     });
-}
+  }
+
+  useEffect(() => {
+    getPokemonInfo(lclPokArrN);
+  }, []);
 
   return (
-    <div>{getPokemonInfo()}</div>
+    <div>
+      <img src={img} alt="pokemon sprite"></img>
+      <p>Experience: {baseExperience}</p>
+      <p>Weight: {weight}</p>
+    </div>
   )
 }
 
 export default APICompare;
+
+/*
+{prop.pokemonList.map((element) => {
+        console.log(element.name.toLowerCase());
+        console.log('in forEach pokemon loop');
+        <EachPokemon
+          pokeName = {element.name}
+          img = {img}
+          baseExperience = {baseExperience}
+          weight = {weight}>
+        </EachPokemon>
+      })}
+*/
+/*
+<EachPokemon
+        pokeName = {lclPokArrN}
+        img = {img}
+        baseExperience = {baseExperience}
+        weight = {weight}>
+</EachPokemon>
+*/
